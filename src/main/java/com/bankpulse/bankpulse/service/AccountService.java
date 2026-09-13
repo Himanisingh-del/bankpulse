@@ -1,5 +1,6 @@
 package com.bankpulse.bankpulse.service;
 
+import com.bankpulse.bankpulse.dto.AccountMapper;
 import com.bankpulse.bankpulse.dto.AccountRequest;
 import com.bankpulse.bankpulse.dto.AccountResponse;
 import com.bankpulse.bankpulse.entity.Account;
@@ -10,9 +11,14 @@ import org.springframework.stereotype.Service;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(
+            AccountRepository accountRepository,
+            AccountMapper accountMapper) {
+
         this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
     }
 
     public AccountResponse createAccount(AccountRequest request) {
@@ -33,7 +39,7 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        return convertToResponse(savedAccount);
+        return accountMapper.toResponse(savedAccount);
     }
 
     public AccountResponse getAccountBalance(String accountNumber) {
@@ -46,17 +52,6 @@ public class AccountService {
                         )
                 );
 
-        return convertToResponse(account);
-    }
-
-    private AccountResponse convertToResponse(Account account) {
-
-        return new AccountResponse(
-                account.getId(),
-                account.getAccountNumber(),
-                account.getAccountHolderName(),
-                account.getEmail(),
-                account.getBalance()
-        );
+        return accountMapper.toResponse(account);
     }
 }
